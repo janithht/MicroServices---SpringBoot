@@ -1,7 +1,8 @@
 package com.ADBMS.userservice.service;
 
-import com.ADBMS.userservice.dto.UserCreate;
-import com.ADBMS.userservice.dto.UserResponse;
+import com.ADBMS.userservice.dto.UserCreateDTO;
+import com.ADBMS.userservice.dto.UserResponseDTO;
+import com.ADBMS.userservice.dto.UserUpdateDTO;
 import com.ADBMS.userservice.model.User;
 import com.ADBMS.userservice.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
@@ -15,7 +16,7 @@ public class UserService {
 
     private final UserRepository userRepository;
 
-    public User createUser(UserCreate userRequest){
+    public User createUser(UserCreateDTO userRequest){
         User user = User.builder()
                 .email(userRequest.getEmail())
                 .name(userRequest.getName())
@@ -26,7 +27,7 @@ public class UserService {
         return createdUser;
     }
 
-    public UserResponse getUserByUsername(String username) {
+    public UserResponseDTO getUserByUsername(String username) {
         User user = userRepository.findByName(username);
 
         if(user == null){
@@ -34,7 +35,7 @@ public class UserService {
 
         }
 
-        UserResponse userResponse = new UserResponse();
+        UserResponseDTO userResponse = new UserResponseDTO();
         userResponse.setId(user.getId());
         userResponse.setName(user.getName());
         userResponse.setContact(user.getContact());
@@ -43,19 +44,42 @@ public class UserService {
         return userResponse;
     }
 
-    /*public List<UserResponse> getAllUsers(){
-        List<User> users = userRepository.findAll();
+    public UserResponseDTO updateByUserName(String username, UserUpdateDTO userUpdateDTO) {
+        User existingUser = userRepository.findByName(username);
 
-        return users.stream().map(this::mapToUserResponse).toList();
+        if (existingUser == null) {
+            throw new IllegalArgumentException("User with username " + username + " not found");
+        }
+
+        existingUser.setEmail(userUpdateDTO.getEmail());
+        existingUser.setName(userUpdateDTO.getName());
+        existingUser.setContact(userUpdateDTO.getContact());
+
+        User updatedUser = userRepository.save(existingUser);
+
+        UserResponseDTO userResponseDTO = mapUserToResponseDTO(updatedUser);
+
+        return userResponseDTO;
     }
 
-    private UserResponse mapToUserResponse(User user){
-        return UserResponse.builder()
-                .id(user.getId())
-                .email(user.getEmail())
-                .name(user.getName())
-                .contact(user.getContact())
-                .password(user.getPassword())
-                .build();
-    }*/
+
+    private UserResponseDTO mapUserToResponseDTO(User user) {
+        UserResponseDTO userResponseDTO = new UserResponseDTO();
+        userResponseDTO.setId(user.getId());
+        userResponseDTO.setEmail(user.getEmail());
+        userResponseDTO.setName(user.getName());
+        userResponseDTO.setContact(user.getContact());
+        return userResponseDTO;
+    }
+
+    public String deleteUserByName(String username) {
+
+        User existingUser = userRepository.findByName(username);
+        if (existingUser == null) {
+            throw new IllegalArgumentException("User with username " + username + " not found");
+        }
+        userRepository.deleteUserByName(username);
+        return "User deleted successfully";
+    }
+
 }

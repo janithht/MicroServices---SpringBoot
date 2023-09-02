@@ -1,6 +1,6 @@
 package com.ADBMS.userservice;
 
-import com.ADBMS.userservice.dto.UserCreate;
+import com.ADBMS.userservice.dto.UserCreateDTO;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
@@ -39,8 +39,8 @@ class UserServiceApplicationTests {
 				.andExpect(status().isCreated());/*
 	}*/
 
-	private UserCreate getUserRequest() {
-		return UserCreate.builder()
+	private UserCreateDTO getUserRequest() {
+		return UserCreateDTO.builder()
 				.email("jhathnagoda@gmail.com")
 				.name("Janith Hathnagoda")
 				.contact("0772433249")

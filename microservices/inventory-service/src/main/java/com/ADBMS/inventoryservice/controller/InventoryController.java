@@ -1,7 +1,8 @@
 package com.ADBMS.inventoryservice.controller;
 
-
 import com.ADBMS.inventoryservice.dto.ProductCreateDTO;
+import com.ADBMS.inventoryservice.dto.ProductResponseDTO;
+import com.ADBMS.inventoryservice.dto.ProductUpdateDTO;
 import com.ADBMS.inventoryservice.model.Inventory;
 import com.ADBMS.inventoryservice.service.InventoryService;
 import lombok.RequiredArgsConstructor;
@@ -23,11 +24,28 @@ public class InventoryController {
        return inventoryService.addNewProduct(productCreateDTO);
     }
 
-
-
-   /* @GetMapping
+    @GetMapping("/{productName}")
     @ResponseStatus(HttpStatus.OK)
-    public List<InventoryResponse> isInStock(@RequestParam List<String> skuCode){
-        return inventoryService.isInStock(skuCode);
-    }*/
+    public ProductResponseDTO getProductDetailsByName(@PathVariable String productName){
+        return inventoryService.getProductDetailsByName(productName);
+    }
+
+    @GetMapping
+    @ResponseStatus(HttpStatus.OK)
+    public List<ProductResponseDTO> getAllProducts(){
+        return inventoryService.getAllProducts();
+    }
+
+    @PutMapping("/{productName}")
+    @ResponseStatus(HttpStatus.OK)
+    public ProductResponseDTO updateProductByName(@PathVariable String productName,@RequestBody ProductUpdateDTO productUpdateDTO){
+        return inventoryService.updateProductByName(productName, productUpdateDTO);
+    }
+
+    @DeleteMapping("/{productName}")
+    @ResponseStatus(HttpStatus.OK)
+    public String deleteProductByName(@PathVariable String productName){
+        return inventoryService.deleteProductByName(productName);
+    }
+
 }

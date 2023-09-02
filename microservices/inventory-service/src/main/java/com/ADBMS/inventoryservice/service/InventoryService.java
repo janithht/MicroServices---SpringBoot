@@ -1,14 +1,15 @@
 package com.ADBMS.inventoryservice.service;
 
 import com.ADBMS.inventoryservice.dto.ProductCreateDTO;
+import com.ADBMS.inventoryservice.dto.ProductResponseDTO;
+import com.ADBMS.inventoryservice.dto.ProductUpdateDTO;
 import com.ADBMS.inventoryservice.model.Inventory;
 import com.ADBMS.inventoryservice.repository.InventoryRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.catalina.User;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -27,14 +28,64 @@ public class InventoryService {
         return newProd;
     }
 
-    /*@Transactional(readOnly = true)
-    public List<InventoryResponse> isInStock(List<String> skuCode){
-        return inventoryRepository.findBySkuCodeIn(skuCode).stream()
-                .map(inventory ->
-                    InventoryResponse.builder()
-                            .skuCode(inventory.getSkuCode())
-                            .isInStock(inventory.getQuantity() > 0)
-                            .build()
-                ).toList();
-    }*/
+    public ProductResponseDTO getProductDetailsByName(String productName) {
+        Inventory inventory = inventoryRepository.findInventoryByProductName(productName);
+        if(inventory == null){
+            throw new IllegalArgumentException("Product not Found");
+        }
+
+        ProductResponseDTO productResponse = new ProductResponseDTO();
+        productResponse.setId(inventory.getId());
+        productResponse.setProductName(inventory.getProductName());
+        productResponse.setQuantity(inventory.getQuantity());
+
+        return  productResponse;
+
+    }
+
+    public ProductResponseDTO updateProductByName(String productName , ProductUpdateDTO productUpdateDTO) {
+        Inventory existingProduct = inventoryRepository.findInventoryByProductName(productName);
+        if(existingProduct == null){
+            throw new IllegalArgumentException("Product not Found");
+        }
+        existingProduct.setProductName(productUpdateDTO.getProductName());
+        existingProduct.setQuantity(productUpdateDTO.getQuantity());
+
+        Inventory updatedInventory = inventoryRepository.save(existingProduct);
+
+        ProductResponseDTO productResponseDTO = new ProductResponseDTO();
+        productResponseDTO.setId(updatedInventory.getId());
+        productResponseDTO.setProductName(updatedInventory.getProductName());
+        productResponseDTO.setQuantity(updatedInventory.getQuantity());
+
+        return productResponseDTO;
+
+    }
+
+    public String deleteProductByName(String productName) {
+        Inventory existingProduct = inventoryRepository.findInventoryByProductName(productName);
+        if(existingProduct == null){
+            throw new IllegalArgumentException("Product not Found");
+        }
+        inventoryRepository.delete(existingProduct);
+        return "Product deleted successfully";
+
+    }
+
+    public List<ProductResponseDTO> getAllProducts() {
+        List<Inventory> products = inventoryRepository.findAll();
+
+
+        List<ProductResponseDTO> productResponseDTOs = new ArrayList<>();
+
+        for (Inventory product : products) {
+            ProductResponseDTO productResponseDTO = new ProductResponseDTO();
+            productResponseDTO.setProductName(product.getProductName());
+            productResponseDTO.setId(product.getId());
+            productResponseDTO.setQuantity(product.getQuantity());
+            productResponseDTOs.add(productResponseDTO);
+        }
+        return productResponseDTOs;
+    }
+
 }

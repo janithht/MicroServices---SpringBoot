@@ -1,4 +1,5 @@
-package com.ADBMS.userservice.dto;
+package com.ADBMS.inventoryservice.dto;
+
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -6,11 +7,10 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 @Data
-@Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class UserCreate {
-    private String name;
-    private String contact;
-    private String email;
+@Builder
+public class ProductUpdateDTO {
+    private String productName;
+    private Integer quantity;
 }
