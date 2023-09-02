@@ -1,14 +1,12 @@
 package com.ADBMS.userservice.service;
 
-import com.ADBMS.userservice.dto.UserRequest;
+import com.ADBMS.userservice.dto.UserCreate;
 import com.ADBMS.userservice.dto.UserResponse;
 import com.ADBMS.userservice.model.User;
 import com.ADBMS.userservice.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
-
-import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -17,18 +15,35 @@ public class UserService {
 
     private final UserRepository userRepository;
 
-    public void createUser(UserRequest userRequest){
+    public User createUser(UserCreate userRequest){
         User user = User.builder()
                 .email(userRequest.getEmail())
                 .name(userRequest.getName())
                 .contact(userRequest.getContact())
-                .password(userRequest.getPassword())
                 .build();
-        userRepository.save(user);
-        log.info("User {} is saved", user.getId());
+        User createdUser = userRepository.save(user);
+        log.info("User {} is saved", createdUser.getId());
+        return createdUser;
     }
 
-    public List<UserResponse> getAllUsers(){
+    public UserResponse getUserByUsername(String username) {
+        User user = userRepository.findByName(username);
+
+        if(user == null){
+            throw new IllegalArgumentException("User not Found");
+
+        }
+
+        UserResponse userResponse = new UserResponse();
+        userResponse.setId(user.getId());
+        userResponse.setName(user.getName());
+        userResponse.setContact(user.getContact());
+        userResponse.setEmail(user.getEmail());
+
+        return userResponse;
+    }
+
+    /*public List<UserResponse> getAllUsers(){
         List<User> users = userRepository.findAll();
 
         return users.stream().map(this::mapToUserResponse).toList();
@@ -42,5 +57,5 @@ public class UserService {
                 .contact(user.getContact())
                 .password(user.getPassword())
                 .build();
-    }
+    }*/
 }

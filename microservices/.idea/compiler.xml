@@ -24,7 +24,7 @@
     <option name="ADDITIONAL_OPTIONS_OVERRIDE">
       <module name="discovery-server" options="-parameters" />
       <module name="inventory-service" options="-parameters" />
-      <module name="microservices" options="-parameters" />
+      <module name="microservices" options="" />
       <module name="order-service" options="-parameters" />
       <module name="user-service" options="-parameters" />
     </option>

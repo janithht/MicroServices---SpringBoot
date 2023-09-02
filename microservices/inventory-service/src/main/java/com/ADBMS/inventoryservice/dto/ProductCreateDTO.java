@@ -1,4 +1,5 @@
-package com.ADBMS.userservice.dto;
+package com.ADBMS.inventoryservice.dto;
+
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -8,9 +9,8 @@ import lombok.NoArgsConstructor;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class UserResponse {
-    private String id;
-    private String email;
-    private String name;
-    private String contact;
+public class ProductCreateDTO {
+
+    private String productName;
+    private Integer quantity;
 }

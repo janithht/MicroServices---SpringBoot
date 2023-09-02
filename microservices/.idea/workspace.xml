@@ -5,26 +5,25 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="a2872dec-ca94-4204-9474-b25472da70d0" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/discovery-server/.gitignore" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/discovery-server/pom.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/discovery-server/src/main/java/com/ADBMS/discoveryserver/DiscoveryServerApplication.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/discovery-server/src/main/resources/application.properties" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/discovery-server/src/test/java/com/ADBMS/AppTest.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/inventory-service/src/main/java/com/ADBMS/inventoryservice/dto/ProductCreateDTO.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/compiler.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/compiler.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/encodings.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/encodings.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/misc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/inventory-service/pom.xml" beforeDir="false" afterPath="$PROJECT_DIR$/inventory-service/pom.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/inventory-service/src/main/java/com/ADBMS/inventoryservice/InventoryServiceApplication.java" beforeDir="false" afterPath="$PROJECT_DIR$/inventory-service/src/main/java/com/ADBMS/inventoryservice/InventoryServiceApplication.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/inventory-service/src/main/java/com/ADBMS/inventoryservice/controller/InventoryController.java" beforeDir="false" afterPath="$PROJECT_DIR$/inventory-service/src/main/java/com/ADBMS/inventoryservice/controller/InventoryController.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/inventory-service/src/main/java/com/ADBMS/inventoryservice/model/Inventory.java" beforeDir="false" afterPath="$PROJECT_DIR$/inventory-service/src/main/java/com/ADBMS/inventoryservice/model/Inventory.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/inventory-service/src/main/java/com/ADBMS/inventoryservice/repository/InventoryRepository.java" beforeDir="false" afterPath="$PROJECT_DIR$/inventory-service/src/main/java/com/ADBMS/inventoryservice/repository/InventoryRepository.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/inventory-service/src/main/java/com/ADBMS/inventoryservice/service/InventoryService.java" beforeDir="false" afterPath="$PROJECT_DIR$/inventory-service/src/main/java/com/ADBMS/inventoryservice/service/InventoryService.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/inventory-service/src/main/java/dto/InventoryResponse.java" beforeDir="false" afterPath="$PROJECT_DIR$/inventory-service/src/main/java/com/ADBMS/inventoryservice/dto/InventoryResponse.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/inventory-service/src/main/resources/application.properties" beforeDir="false" afterPath="$PROJECT_DIR$/inventory-service/src/main/resources/application.properties" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/order-service/pom.xml" beforeDir="false" afterPath="$PROJECT_DIR$/order-service/pom.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/order-service/src/main/java/com/ADBMS/orderservice/OrderServiceApplication.java" beforeDir="false" afterPath="$PROJECT_DIR$/order-service/src/main/java/com/ADBMS/orderservice/OrderServiceApplication.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/order-service/src/main/java/com/ADBMS/orderservice/config/WebClientConfig.java" beforeDir="false" afterPath="$PROJECT_DIR$/order-service/src/main/java/com/ADBMS/orderservice/config/WebClientConfig.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/order-service/src/main/java/com/ADBMS/orderservice/service/OrderService.java" beforeDir="false" afterPath="$PROJECT_DIR$/order-service/src/main/java/com/ADBMS/orderservice/service/OrderService.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/order-service/src/main/resources/application.properties" beforeDir="false" afterPath="$PROJECT_DIR$/order-service/src/main/resources/application.properties" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/pom.xml" beforeDir="false" afterPath="$PROJECT_DIR$/pom.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/user-service/pom.xml" beforeDir="false" afterPath="$PROJECT_DIR$/user-service/pom.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/user-service/src/main/java/com/ADBMS/userservice/UserServiceApplication.java" beforeDir="false" afterPath="$PROJECT_DIR$/user-service/src/main/java/com/ADBMS/userservice/UserServiceApplication.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/user-service/src/main/java/com/ADBMS/userservice/controller/UserController.java" beforeDir="false" afterPath="$PROJECT_DIR$/user-service/src/main/java/com/ADBMS/userservice/controller/UserController.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/user-service/src/main/java/com/ADBMS/userservice/dto/UserRequest.java" beforeDir="false" afterPath="$PROJECT_DIR$/user-service/src/main/java/com/ADBMS/userservice/dto/UserCreate.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/user-service/src/main/java/com/ADBMS/userservice/dto/UserResponse.java" beforeDir="false" afterPath="$PROJECT_DIR$/user-service/src/main/java/com/ADBMS/userservice/dto/UserResponse.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/user-service/src/main/java/com/ADBMS/userservice/model/User.java" beforeDir="false" afterPath="$PROJECT_DIR$/user-service/src/main/java/com/ADBMS/userservice/model/User.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/user-service/src/main/java/com/ADBMS/userservice/repository/UserRepository.java" beforeDir="false" afterPath="$PROJECT_DIR$/user-service/src/main/java/com/ADBMS/userservice/repository/UserRepository.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/user-service/src/main/java/com/ADBMS/userservice/service/UserService.java" beforeDir="false" afterPath="$PROJECT_DIR$/user-service/src/main/java/com/ADBMS/userservice/service/UserService.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/user-service/src/main/resources/application.properties" beforeDir="false" afterPath="$PROJECT_DIR$/user-service/src/main/resources/application.properties" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/user-service/src/test/java/com/ADBMS/userservice/UserServiceApplicationTests.java" beforeDir="false" afterPath="$PROJECT_DIR$/user-service/src/test/java/com/ADBMS/userservice/UserServiceApplicationTests.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -69,14 +68,14 @@
     "WebServerToolWindowFactoryState": "false",
     "git-widget-placeholder": "service-discovery",
     "jdk.selected.JAVA_MODULE": "jbr-17",
-    "last_opened_file_path": "/Users/dominiclakshan/Desktop/MicroServices---SpringBoot/microservices/discovery-server",
+    "last_opened_file_path": "E:/MicroServices---SpringBoot/microservices",
     "node.js.detected.package.eslint": "true",
     "node.js.detected.package.tslint": "true",
     "node.js.selected.package.eslint": "(autodetect)",
     "node.js.selected.package.tslint": "(autodetect)",
     "nodejs_package_manager_path": "npm",
     "settings.editor.selected.configurable": "reference.settings.project.maven.importing",
-    "spring.configuration.checksum": "fcd976c8c7905b43b54acca8d6474105",
+    "spring.configuration.checksum": "449a75119151b950d89b6dc09ac317db",
     "vue.rearranger.settings.migration": "true"
   },
   "keyToStringList": {
@@ -127,9 +126,10 @@
       </method>
     </configuration>
     <configuration name="InventoryServiceApplication" type="SpringBootApplicationConfigurationType" factoryName="Spring Boot">
+      <option name="ACTIVE_PROFILES" />
       <envs>
         <env name="db_username" value="postgres" />
-        <env name="db_password" value="lakshan31" />
+        <env name="db_password" value="root" />
       </envs>
       <module name="inventory-service" />
       <option name="SPRING_BOOT_MAIN_CLASS" value="com.ADBMS.inventoryservice.InventoryServiceApplication" />
@@ -138,9 +138,10 @@
       </method>
     </configuration>
     <configuration name="OrderServiceApplication" type="SpringBootApplicationConfigurationType" factoryName="Spring Boot">
+      <option name="ACTIVE_PROFILES" />
       <envs>
         <env name="db_username" value="root" />
-        <env name="db_password" value="lakshan31" />
+        <env name="db_password" value="7521251sYm@#" />
       </envs>
       <module name="order-service" />
       <option name="SPRING_BOOT_MAIN_CLASS" value="com.ADBMS.orderservice.OrderServiceApplication" />
@@ -181,6 +182,7 @@
       <workItem from="1692276727576" duration="7355000" />
       <workItem from="1692857598572" duration="2549000" />
       <workItem from="1693400823367" duration="7087000" />
+      <workItem from="1693637902238" duration="8326000" />
     </task>
     <servers />
   </component>
