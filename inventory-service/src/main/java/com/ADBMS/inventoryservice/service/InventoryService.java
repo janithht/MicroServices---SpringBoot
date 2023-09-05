@@ -1,8 +1,6 @@
 package com.ADBMS.inventoryservice.service;
 
-import com.ADBMS.inventoryservice.dto.ProductCreateDTO;
-import com.ADBMS.inventoryservice.dto.ProductResponseDTO;
-import com.ADBMS.inventoryservice.dto.ProductUpdateDTO;
+import com.ADBMS.inventoryservice.dto.*;
 import com.ADBMS.inventoryservice.model.Inventory;
 import com.ADBMS.inventoryservice.repository.InventoryRepository;
 import lombok.RequiredArgsConstructor;
@@ -22,7 +20,9 @@ public class InventoryService {
     public Inventory addNewProduct(ProductCreateDTO productCreateDTO) {
         Inventory inventory = Inventory.builder()
                 .productName(productCreateDTO.getProductName())
-                .quantity(productCreateDTO.getQuantity())
+                .stockQuantity(productCreateDTO.getStockQuantity())
+                .description(productCreateDTO.getDescription())
+                .price(productCreateDTO.getPrice())
                 .build();
         Inventory newProd = inventoryRepository.save(inventory);
         return newProd;
@@ -35,12 +35,13 @@ public class InventoryService {
         }
 
         ProductResponseDTO productResponse = new ProductResponseDTO();
-        productResponse.setId(inventory.getId());
+        productResponse.setId(inventory.getProductID());
         productResponse.setProductName(inventory.getProductName());
-        productResponse.setQuantity(inventory.getQuantity());
+        productResponse.setDescription(inventory.getDescription());
+        productResponse.setUnitPrice(inventory.getPrice());
+        productResponse.setStockQuantity(inventory.getStockQuantity());
 
         return  productResponse;
-
     }
 
     public ProductResponseDTO updateProductByName(String productName , ProductUpdateDTO productUpdateDTO) {
@@ -49,17 +50,19 @@ public class InventoryService {
             throw new IllegalArgumentException("Product not Found");
         }
         existingProduct.setProductName(productUpdateDTO.getProductName());
-        existingProduct.setQuantity(productUpdateDTO.getQuantity());
-
+        existingProduct.setStockQuantity(productUpdateDTO.getStockQuantity());
+        existingProduct.setPrice(productUpdateDTO.getUnitPrice());
+        existingProduct.setDescription(productUpdateDTO.getDescription());
         Inventory updatedInventory = inventoryRepository.save(existingProduct);
 
         ProductResponseDTO productResponseDTO = new ProductResponseDTO();
-        productResponseDTO.setId(updatedInventory.getId());
+        productResponseDTO.setId(updatedInventory.getProductID());
         productResponseDTO.setProductName(updatedInventory.getProductName());
-        productResponseDTO.setQuantity(updatedInventory.getQuantity());
+        productResponseDTO.setDescription(updatedInventory.getDescription());
+        productResponseDTO.setStockQuantity(updatedInventory.getStockQuantity());
+        productResponseDTO.setUnitPrice(updatedInventory.getPrice());
 
         return productResponseDTO;
-
     }
 
     public String deleteProductByName(String productName) {
@@ -69,23 +72,46 @@ public class InventoryService {
         }
         inventoryRepository.delete(existingProduct);
         return "Product deleted successfully";
-
     }
 
     public List<ProductResponseDTO> getAllProducts() {
         List<Inventory> products = inventoryRepository.findAll();
-
 
         List<ProductResponseDTO> productResponseDTOs = new ArrayList<>();
 
         for (Inventory product : products) {
             ProductResponseDTO productResponseDTO = new ProductResponseDTO();
             productResponseDTO.setProductName(product.getProductName());
-            productResponseDTO.setId(product.getId());
-            productResponseDTO.setQuantity(product.getQuantity());
+            productResponseDTO.setId(product.getProductID());
+            productResponseDTO.setStockQuantity(product.getStockQuantity());
+            productResponseDTO.setUnitPrice(product.getPrice());
+            productResponseDTO.setDescription(product.getDescription());
             productResponseDTOs.add(productResponseDTO);
         }
+
         return productResponseDTOs;
     }
 
+    public List<OrderedProductResponse> getOrderedProducts(List<OrderedProductRequest> orderedProductRequestList) {
+        List<OrderedProductResponse> orderedProductResponses = new ArrayList<>();
+
+        for (OrderedProductRequest orderedProduct:
+             orderedProductRequestList) {
+            OrderedProductResponse orderedProductResponse = new OrderedProductResponse();
+            Inventory inventory = inventoryRepository.findById(orderedProduct.getProductID()).orElse(null);
+
+            if (inventory == null || inventory.getStockQuantity() < orderedProduct.getQuantity()) {
+                orderedProductResponse.setInStock(false);
+                continue;
+            }
+
+            orderedProductResponse.setInStock(true);
+            orderedProductResponse.setProductID(inventory.getProductID());
+            orderedProductResponse.setUnitPrice(inventory.getPrice());
+            orderedProductResponse.setQuantityRequired(orderedProduct.getQuantity());
+            inventory.setStockQuantity(inventory.getStockQuantity()-orderedProduct.getQuantity());
+            orderedProductResponses.add(orderedProductResponse);
+        }
+        return orderedProductResponses;
+    }
 }

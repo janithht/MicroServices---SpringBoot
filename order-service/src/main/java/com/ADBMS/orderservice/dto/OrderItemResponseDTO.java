@@ -6,15 +6,13 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.math.BigDecimal;
-import java.util.List;
 
-@Data
 @AllArgsConstructor
 @NoArgsConstructor
+@Data
 @Builder
-public class InventoryResponse {
-    private boolean isInStock;
+public class OrderItemResponseDTO {
     private Long productID;
     private int quantityRequired;
-    private BigDecimal unitPrice;
+    private BigDecimal pricePerUnit;
 }

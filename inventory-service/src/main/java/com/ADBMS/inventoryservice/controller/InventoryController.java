@@ -1,8 +1,6 @@
 package com.ADBMS.inventoryservice.controller;
 
-import com.ADBMS.inventoryservice.dto.ProductCreateDTO;
-import com.ADBMS.inventoryservice.dto.ProductResponseDTO;
-import com.ADBMS.inventoryservice.dto.ProductUpdateDTO;
+import com.ADBMS.inventoryservice.dto.*;
 import com.ADBMS.inventoryservice.model.Inventory;
 import com.ADBMS.inventoryservice.service.InventoryService;
 import lombok.RequiredArgsConstructor;
@@ -34,6 +32,12 @@ public class InventoryController {
     @ResponseStatus(HttpStatus.OK)
     public List<ProductResponseDTO> getAllProducts(){
         return inventoryService.getAllProducts();
+    }
+
+    @GetMapping("/orders")
+    @ResponseStatus(HttpStatus.OK)
+    public List<OrderedProductResponse> getOrderedProducts(@RequestBody List<OrderedProductRequest> orderedProductRequestList) {
+        return inventoryService.getOrderedProducts(orderedProductRequestList);
     }
 
     @PutMapping("/{productName}")

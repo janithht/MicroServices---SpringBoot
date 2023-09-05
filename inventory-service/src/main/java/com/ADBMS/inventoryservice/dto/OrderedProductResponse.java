@@ -7,13 +7,13 @@ import lombok.NoArgsConstructor;
 
 import java.math.BigDecimal;
 
-@Data
-@Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class ProductCreateDTO {
-    private String productName;
-    private String description;
-    private BigDecimal price;
-    private Integer stockQuantity;
+@Data
+@Builder
+public class OrderedProductResponse {
+    private boolean isInStock;
+    private Long productID;
+    private int quantityRequired;
+    private BigDecimal unitPrice;
 }

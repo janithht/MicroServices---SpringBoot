@@ -32,7 +32,6 @@ public class UserService {
 
         if(user == null){
             throw new IllegalArgumentException("User not Found");
-
         }
 
         UserResponseDTO userResponse = new UserResponseDTO();

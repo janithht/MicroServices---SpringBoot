@@ -1,6 +1,7 @@
 package com.ADBMS.orderservice.controller;
 
-import com.ADBMS.orderservice.dto.OrderRequest;
+import com.ADBMS.orderservice.dto.OrderRequestDTO;
+import com.ADBMS.orderservice.model.Order;
 import com.ADBMS.orderservice.service.OrderService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -15,10 +16,8 @@ public class OrderController {
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public String placeOrder(@RequestBody OrderRequest orderRequest){
-        orderService.placeOrder(orderRequest);
-        return "Order Placed Successfully";
+    public Order placeOrder(@RequestBody OrderRequestDTO orderRequest){
+        return orderService.placeOrder(orderRequest);
     }
-
 
 }

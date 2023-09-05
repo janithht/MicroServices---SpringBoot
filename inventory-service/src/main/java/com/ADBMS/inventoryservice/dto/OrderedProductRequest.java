@@ -1,20 +1,15 @@
 package com.ADBMS.inventoryservice.dto;
 
-
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.math.BigDecimal;
-
-@Data
 @AllArgsConstructor
 @NoArgsConstructor
+@Data
 @Builder
-public class ProductUpdateDTO {
-    private String productName;
-    private String description;
-    private BigDecimal unitPrice;
-    private Integer stockQuantity;
+public class OrderedProductRequest {
+    private Long productID;
+    private int quantity;
 }
