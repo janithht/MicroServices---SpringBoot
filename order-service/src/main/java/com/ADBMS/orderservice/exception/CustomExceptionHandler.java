@@ -52,4 +52,15 @@ public class CustomExceptionHandler {
         );
         return new ResponseEntity<>(customException, badRequest);
     }
+
+    @ExceptionHandler(value = {OrderNotFoundException.class})
+    public ResponseEntity<Object> handleOrderNotFoundException(OrderNotFoundException e){
+        HttpStatus notFound = HttpStatus.NOT_FOUND;
+        CustomException customException = new CustomException(
+                e.getMessage(),
+                notFound,
+                ZonedDateTime.now()
+        );
+        return new ResponseEntity<>(customException, notFound);
+    }
 }

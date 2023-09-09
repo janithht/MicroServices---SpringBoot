@@ -4,10 +4,7 @@ import com.ADBMS.orderservice.dto.InventoryResponseDTO;
 import com.ADBMS.orderservice.dto.OrderItemRequestDTO;
 import com.ADBMS.orderservice.dto.OrderRequestDTO;
 import com.ADBMS.orderservice.dto.UserDTO;
-import com.ADBMS.orderservice.exception.InsufficientStockException;
-import com.ADBMS.orderservice.exception.ProductNotFoundException;
-import com.ADBMS.orderservice.exception.MicroserviceException;
-import com.ADBMS.orderservice.exception.UserNotFoundException;
+import com.ADBMS.orderservice.exception.*;
 import com.ADBMS.orderservice.model.Order;
 import com.ADBMS.orderservice.model.OrderItem;
 import com.ADBMS.orderservice.repository.OrderItemRepository;
@@ -34,6 +31,16 @@ public class OrderService {
     private final OrderRepository orderRepository;
     private final OrderItemRepository orderItemRepository;
     private final WebClient.Builder webClientBuilder;
+
+    public List<Order> getAllOrders() {
+        return orderRepository.findAll();
+    }
+
+    public Order getOrderByOrderID(Long orderID) {
+        return orderRepository.findById(orderID).orElseThrow(
+                () -> new OrderNotFoundException("Order is not found with orderID : " + orderID)
+        );
+    }
 
     @Transactional
     public Order placeOrder(OrderRequestDTO orderRequestDTO) {
