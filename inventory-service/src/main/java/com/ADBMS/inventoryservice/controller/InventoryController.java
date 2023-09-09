@@ -18,6 +18,12 @@ public class InventoryController {
 
     private final InventoryService inventoryService;
 
+    @GetMapping("/{productId}")
+    @ResponseStatus(HttpStatus.OK)
+    public boolean isInStock(@PathVariable("productId") String productId){
+        return inventoryService.isInStock(Long.valueOf(productId));
+    }
+
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
     public Inventory addNewProduct(@RequestBody ProductCreateDTO productCreateDTO){

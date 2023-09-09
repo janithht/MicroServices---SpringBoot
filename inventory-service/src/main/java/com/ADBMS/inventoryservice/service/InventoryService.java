@@ -88,4 +88,14 @@ public class InventoryService {
         return productResponseDTOs;
     }
 
+    public Boolean isInStock(Long productId){
+        Inventory existingProduct = inventoryRepository.findInventoryByProductId(productId);
+        if (existingProduct==null){
+            return false;
+        }
+        else{
+            return true;
+        }
+    }
+
 }
