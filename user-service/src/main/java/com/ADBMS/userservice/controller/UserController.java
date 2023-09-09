@@ -13,7 +13,6 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/api/users")
 @RequiredArgsConstructor
 public class UserController {
-
     private final UserService userService;
 
     @PostMapping
@@ -39,5 +38,4 @@ public class UserController {
     public String deleteUserByName(@PathVariable String username){
         return userService.deleteUserByName(username);
     }
-
 }

@@ -14,7 +14,6 @@ import org.springframework.stereotype.Service;
 @RequiredArgsConstructor
 @Slf4j
 public class UserService {
-
     private final UserRepository userRepository;
 
     public User createUser(UserCreateDTO userRequest){
@@ -60,7 +59,6 @@ public class UserService {
         return userResponseDTO;
     }
 
-
     private UserResponseDTO mapUserToResponseDTO(User user) {
         UserResponseDTO userResponseDTO = new UserResponseDTO();
         userResponseDTO.setUserID(user.getId());
@@ -79,5 +77,4 @@ public class UserService {
         userRepository.deleteUserByName(username);
         return "User deleted successfully";
     }
-
 }

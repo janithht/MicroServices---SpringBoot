@@ -18,7 +18,6 @@ import java.util.List;
 @RequiredArgsConstructor
 @Slf4j
 public class InventoryService {
-
     private final InventoryRepository inventoryRepository;
 
     public Inventory addNewProduct(ProductCreateDTO productCreateDTO) {

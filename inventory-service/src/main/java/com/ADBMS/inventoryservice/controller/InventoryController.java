@@ -16,7 +16,6 @@ import java.util.List;
 @RequestMapping("/api/inventory")
 @RequiredArgsConstructor
 public class InventoryController {
-
     private final InventoryService inventoryService;
 
     @PostMapping
@@ -35,7 +34,6 @@ public class InventoryController {
     public ProductResponseDTO getProductByProductID(@PathVariable(name = "productID") Long productID) {
         return inventoryService.getProductByProductID(productID);
     }
-
 
     @PutMapping("/{productName}")
     @ResponseStatus(HttpStatus.OK)
@@ -64,5 +62,4 @@ public class InventoryController {
     public String deleteProductByName(@PathVariable String productName){
         return inventoryService.deleteProductByName(productName);
     }
-
 }
