@@ -1,4 +1,4 @@
-package com.ADBMS.inventoryservice.dto;
+package com.ADBMS.orderservice.dto;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -7,13 +7,14 @@ import lombok.NoArgsConstructor;
 
 import java.math.BigDecimal;
 
+@Data
 @AllArgsConstructor
 @NoArgsConstructor
-@Data
 @Builder
-public class OrderedProductResponse {
-    private boolean isInStock;
-    private Long productID;
-    private int quantityRequired;
+public class InventoryResponseDTO {
+    private Long id;
+    private String productName;
+    private String description;
     private BigDecimal unitPrice;
+    private Integer stockQuantity;
 }

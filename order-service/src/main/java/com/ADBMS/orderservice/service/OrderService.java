@@ -1,24 +1,30 @@
 package com.ADBMS.orderservice.service;
 
-import com.ADBMS.orderservice.dto.InventoryResponse;
+import com.ADBMS.orderservice.dto.InventoryResponseDTO;
 import com.ADBMS.orderservice.dto.OrderItemRequestDTO;
-import com.ADBMS.orderservice.dto.OrderLineItemsDto;
 import com.ADBMS.orderservice.dto.OrderRequestDTO;
+import com.ADBMS.orderservice.dto.UserDTO;
+import com.ADBMS.orderservice.exception.InsufficientStockException;
+import com.ADBMS.orderservice.exception.ProductNotFoundException;
+import com.ADBMS.orderservice.exception.MicroserviceException;
+import com.ADBMS.orderservice.exception.UserNotFoundException;
 import com.ADBMS.orderservice.model.Order;
 import com.ADBMS.orderservice.model.OrderItem;
-import com.ADBMS.orderservice.model.OrderLineItems;
 import com.ADBMS.orderservice.repository.OrderItemRepository;
 import com.ADBMS.orderservice.repository.OrderRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.HttpStatusCode;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.reactive.function.client.WebClient;
+import reactor.core.publisher.Flux;
+import reactor.core.publisher.Mono;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
-import java.util.Arrays;
+import java.util.ArrayList;
 import java.util.List;
-import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
@@ -29,63 +35,111 @@ public class OrderService {
     private final OrderItemRepository orderItemRepository;
     private final WebClient.Builder webClientBuilder;
 
-    public Order placeOrder(OrderRequestDTO orderRequest){
-        // :todo validate user
-        // :todo get the set of productIDs and set of quantities to the inventory service
-        // :todo if every thing is okay place the order
+    @Transactional
+    public Order placeOrder(OrderRequestDTO orderRequestDTO) {
+        // 1. fetching user information from the user-microservice
+        UserDTO userDTO = fetchUserInformation(orderRequestDTO.getUserID());
+
+        // 2. creating order entity.
         Order order = new Order();
-        order.setUserID(orderRequest.getUserID());
+        order.setUserID(userDTO.getUserID());
+        order.setOrderDate(LocalDateTime.now());
+        order.setStatus("Pending");
+        order.setTotalAmount(BigDecimal.ZERO);
 
-//        List<OrderItem> orderItems = orderRequest.getOrderItems()
-//                .stream()
-//                .map(item -> )
-//                .toList();
-//        order.setOrderLineItemsList(orderLineItems);
+        // 3. Fetch product information from the Inventory microservice and validate availability.
+        List<OrderItem> orderItems = new ArrayList<>();
+        BigDecimal totalAmount = BigDecimal.ZERO;
 
-        List<OrderItemRequestDTO> orderItems = orderRequest.getOrderItems();
+        for (OrderItemRequestDTO orderItemRequestDTO : orderRequestDTO.getOrderItems()) {
+            InventoryResponseDTO inventoryResponseDTO = fetchProductInformation(orderItemRequestDTO.getProductID());
 
-        // Call Inventory Service, and place order if product is in
-        // stock
-        InventoryResponse[] inventoryResponseArray = webClientBuilder.build().get()
-                .uri("http://inventory-service/api/inventory/orders", uriBuilder -> uriBuilder.queryParam("orderItems",orderItems).build())
-                .retrieve()
-                .bodyToMono(InventoryResponse[].class)
-                .block();
-
-        assert inventoryResponseArray != null;
-        boolean allProductsInStock = Arrays.stream(inventoryResponseArray)
-                .allMatch(InventoryResponse::isInStock);
-
-        if(allProductsInStock){
-            order = orderRepository.save(order);
-            BigDecimal totalAmount = BigDecimal.valueOf(0);
-            for (InventoryResponse inventoryResponse:
-                 inventoryResponseArray) {
-                OrderItem orderItem = new OrderItem();
-                orderItem.setProductID(inventoryResponse.getProductID());
-                orderItem.setQuantity(inventoryResponse.getQuantityRequired());
-                orderItem.setPricePerUnit(inventoryResponse.getUnitPrice());
-                orderItem.setSubTotal(BigDecimal.valueOf(inventoryResponse.getQuantityRequired()).multiply(inventoryResponse.getUnitPrice()));
-                orderItem.setOrder(order);
-                orderItemRepository.save(orderItem);
-                totalAmount = totalAmount.add(orderItem.getSubTotal());
+            if (inventoryResponseDTO == null) {
+                throw new ProductNotFoundException("Product is not found with ID " + orderItemRequestDTO.getProductID());
             }
-            order.setStatus("Processed");
-            order.setTotalAmount(totalAmount);
-            order.setOrderDate(LocalDateTime.now());
-            return orderRepository.save(order);
-        }else {
-            throw new IllegalArgumentException("Product is not in stock, please try again later");
+
+            if (orderItemRequestDTO.getQuantity() > inventoryResponseDTO.getStockQuantity()) {
+                throw new InsufficientStockException("Insufficient stock for product:" + orderItemRequestDTO.getProductID());
+            }
+
+            OrderItem orderItem = new OrderItem();
+            orderItem.setProductID(inventoryResponseDTO.getId());
+            orderItem.setPricePerUnit(inventoryResponseDTO.getUnitPrice());
+            orderItem.setQuantity(orderItemRequestDTO.getQuantity());
+            orderItem.setSubTotal(inventoryResponseDTO.getUnitPrice().multiply(BigDecimal.valueOf(orderItemRequestDTO.getQuantity())));
+            orderItem.setOrder(order);
+
+            orderItems.add(orderItem);
+            totalAmount = totalAmount.add(orderItem.getSubTotal());
         }
+
+        order.setOrderItems(orderItems);
+        order.setTotalAmount(totalAmount);
+
+        // 4. Deduct the relevant quantities from the Inventory microservice.
+        deductInventoryQuantities(orderItems);
+
+        // 5. Save the order and order items
+        orderItemRepository.saveAll(orderItems);
+        return orderRepository.save(order);
     }
 
-//    private OrderLineItems mapToDto(OrderLineItemsDto orderLineItemsDto) {
-//        OrderLineItems orderLineItems = new OrderLineItems();
-//        orderLineItems.setPrice(orderLineItemsDto.getPrice());
-//        orderLineItems.setQuantity(orderLineItemsDto.getQuantity());
-//        orderLineItems.setSkuCode(orderLineItemsDto.getSkuCode());
-//        return orderLineItems;
-//    }
+    private UserDTO fetchUserInformation(String userID) {
+        WebClient webClient = webClientBuilder.baseUrl("http://user-service").build();
+        UserDTO userDTO = webClient.get()
+                .uri("/api/users/{userID}", userID)
+                .retrieve()
+                .onStatus(HttpStatusCode::is4xxClientError, clientResponse -> {
+                    throw new UserNotFoundException("User not found for the userID " + userID);
+                })
+                .onStatus(HttpStatusCode::is5xxServerError, clientResponse -> {
+                    throw new MicroserviceException("User microservice is unavailable");
+                })
+                .bodyToMono(UserDTO.class)
+                .block();
+        if (userDTO == null) {
+            throw new UserNotFoundException("User not found for the userID " + userID );
+        }
+        return userDTO;
+    }
 
+    private InventoryResponseDTO fetchProductInformation(Long productID) {
+        WebClient webClient = webClientBuilder.baseUrl("http://inventory-service").build();
 
+        InventoryResponseDTO inventoryResponseDTO = webClient.get()
+                .uri("/api/inventory/{productID}", productID)
+                .retrieve()
+                .onStatus(HttpStatusCode::is4xxClientError, clientResponse -> {
+                    throw new ProductNotFoundException("Product is not found with ID " + productID);
+                })
+                .onStatus(HttpStatusCode::is5xxServerError, clientResponse -> {
+                    throw new MicroserviceException("Inventory microservice is unavailable");
+                })
+                .bodyToMono(InventoryResponseDTO.class)
+                .block();
+
+        return inventoryResponseDTO;
+    }
+
+    private void deductInventoryQuantities(List<OrderItem> orderItems) {
+        WebClient webClient = webClientBuilder.baseUrl("http://inventory-service").build();
+        List<Mono<Void>> updateRequests = new ArrayList<>();
+        for (OrderItem orderItem : orderItems) {
+            Mono<Void> updateRequest = webClient.put()
+                    .uri("api/inventory/{productID}/quan-deduction/{quantityToDeduct}", orderItem.getProductID(),orderItem.getQuantity())
+                    .retrieve()
+                    .onStatus(HttpStatusCode::is4xxClientError, clientResponse -> {
+                        if (clientResponse.statusCode() == HttpStatus.NOT_FOUND) {
+                            throw new ProductNotFoundException("Product not found with the productID : " + orderItem.getProductID());
+                        }
+                        throw new InsufficientStockException("Insufficient stock for the productID : " + orderItem.getProductID());
+                    })
+                    .onStatus(HttpStatusCode::is5xxServerError, clientResponse -> {
+                        throw new MicroserviceException("Inventory microservice is unavailable.");
+                    })
+                    .bodyToMono(Void.class);
+            updateRequests.add(updateRequest);
+        }
+        Flux.merge(updateRequests).blockLast();
+    }
 }

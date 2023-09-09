@@ -5,13 +5,13 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.util.List;
-
-@Data
 @AllArgsConstructor
 @NoArgsConstructor
+@Data
 @Builder
-public class OrderRequestDTO {
+public class UserDTO {
     private String userID;
-    private List<OrderItemRequestDTO> orderItems;
+    private String email;
+    private String username;
+    private String contact;
 }

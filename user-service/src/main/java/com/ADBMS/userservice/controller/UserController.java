@@ -10,7 +10,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("/api/user")
+@RequestMapping("/api/users")
 @RequiredArgsConstructor
 public class UserController {
 
@@ -22,10 +22,10 @@ public class UserController {
         return userService.createUser(userCreate);
     }
 
-    @GetMapping("/{username}")
+    @GetMapping("/{userID}")
     @ResponseStatus(HttpStatus.OK)
-    public UserResponseDTO getUserByUsername(@PathVariable String username){
-        return userService.getUserByUsername(username);
+    public UserResponseDTO getUserByUserId(@PathVariable(name = "userID") String userID){
+        return userService.getUserByUserId(userID);
     }
 
     @PutMapping("/{username}")
@@ -40,9 +40,4 @@ public class UserController {
         return userService.deleteUserByName(username);
     }
 
-   /* @GetMapping
-    @ResponseStatus(HttpStatus.OK)
-    public List<UserResponse> getAllUsers(){
-        return userService.getAllUsers();
-    }*/
 }

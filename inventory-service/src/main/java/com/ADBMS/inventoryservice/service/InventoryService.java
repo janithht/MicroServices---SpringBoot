@@ -1,10 +1,14 @@
 package com.ADBMS.inventoryservice.service;
 
 import com.ADBMS.inventoryservice.dto.*;
+import com.ADBMS.inventoryservice.exception.InsufficientStockException;
+import com.ADBMS.inventoryservice.exception.ProductNotFoundException;
 import com.ADBMS.inventoryservice.model.Inventory;
 import com.ADBMS.inventoryservice.repository.InventoryRepository;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -92,26 +96,30 @@ public class InventoryService {
         return productResponseDTOs;
     }
 
-    public List<OrderedProductResponse> getOrderedProducts(List<OrderedProductRequest> orderedProductRequestList) {
-        List<OrderedProductResponse> orderedProductResponses = new ArrayList<>();
+    public ProductResponseDTO getProductByProductID(Long productID) {
+        Inventory inventory = inventoryRepository.findById(productID).orElseThrow(
+                () -> new ProductNotFoundException("Product is not found with ID " + productID)
+        );
 
-        for (OrderedProductRequest orderedProduct:
-             orderedProductRequestList) {
-            OrderedProductResponse orderedProductResponse = new OrderedProductResponse();
-            Inventory inventory = inventoryRepository.findById(orderedProduct.getProductID()).orElse(null);
+        ProductResponseDTO productResponseDTO = new ProductResponseDTO();
+        productResponseDTO.setId(inventory.getProductID());
+        productResponseDTO.setProductName(inventory.getProductName());
+        productResponseDTO.setStockQuantity(inventory.getStockQuantity());
+        productResponseDTO.setDescription(inventory.getDescription());
+        productResponseDTO.setUnitPrice(inventory.getPrice());
 
-            if (inventory == null || inventory.getStockQuantity() < orderedProduct.getQuantity()) {
-                orderedProductResponse.setInStock(false);
-                continue;
-            }
+        return productResponseDTO;
+    }
 
-            orderedProductResponse.setInStock(true);
-            orderedProductResponse.setProductID(inventory.getProductID());
-            orderedProductResponse.setUnitPrice(inventory.getPrice());
-            orderedProductResponse.setQuantityRequired(orderedProduct.getQuantity());
-            inventory.setStockQuantity(inventory.getStockQuantity()-orderedProduct.getQuantity());
-            orderedProductResponses.add(orderedProductResponse);
+    @Transactional
+    public void deductProductQuantity(Long productID, int quantityToDeduct) {
+        Inventory inventory = inventoryRepository.findById(productID).orElseThrow(
+                () -> new ProductNotFoundException("Product not found with productID : " + productID)
+        );
+        if (quantityToDeduct > inventory.getStockQuantity()) {
+            throw new InsufficientStockException("Insufficient stock for productID : " + productID);
         }
-        return orderedProductResponses;
+        inventory.setStockQuantity(inventory.getStockQuantity() - quantityToDeduct);
+        inventoryRepository.save(inventory);
     }
 }

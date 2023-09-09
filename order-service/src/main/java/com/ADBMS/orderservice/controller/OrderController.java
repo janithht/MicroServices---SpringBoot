@@ -15,7 +15,6 @@ public class OrderController {
     private final OrderService orderService;
 
     @PostMapping
-    @ResponseStatus(HttpStatus.CREATED)
     public Order placeOrder(@RequestBody OrderRequestDTO orderRequest){
         return orderService.placeOrder(orderRequest);
     }

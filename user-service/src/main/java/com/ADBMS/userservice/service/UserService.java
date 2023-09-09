@@ -3,6 +3,7 @@ package com.ADBMS.userservice.service;
 import com.ADBMS.userservice.dto.UserCreateDTO;
 import com.ADBMS.userservice.dto.UserResponseDTO;
 import com.ADBMS.userservice.dto.UserUpdateDTO;
+import com.ADBMS.userservice.exception.UserNotFoundException;
 import com.ADBMS.userservice.model.User;
 import com.ADBMS.userservice.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
@@ -27,16 +28,14 @@ public class UserService {
         return createdUser;
     }
 
-    public UserResponseDTO getUserByUsername(String username) {
-        User user = userRepository.findByName(username);
-
-        if(user == null){
-            throw new IllegalArgumentException("User not Found");
-        }
+    public UserResponseDTO getUserByUserId(String userId) {
+        User user = userRepository.findById(userId).orElseThrow(
+                () -> new UserNotFoundException("User is not found with ID " + userId)
+        );
 
         UserResponseDTO userResponse = new UserResponseDTO();
-        userResponse.setId(user.getId());
-        userResponse.setName(user.getName());
+        userResponse.setUserID(user.getId());
+        userResponse.setUsername(user.getName());
         userResponse.setContact(user.getContact());
         userResponse.setEmail(user.getEmail());
 
@@ -64,9 +63,9 @@ public class UserService {
 
     private UserResponseDTO mapUserToResponseDTO(User user) {
         UserResponseDTO userResponseDTO = new UserResponseDTO();
-        userResponseDTO.setId(user.getId());
+        userResponseDTO.setUserID(user.getId());
         userResponseDTO.setEmail(user.getEmail());
-        userResponseDTO.setName(user.getName());
+        userResponseDTO.setUsername(user.getName());
         userResponseDTO.setContact(user.getContact());
         return userResponseDTO;
     }
