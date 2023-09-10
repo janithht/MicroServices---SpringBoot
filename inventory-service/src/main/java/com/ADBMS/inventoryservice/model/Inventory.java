@@ -3,8 +3,10 @@ package com.ADBMS.inventoryservice.model;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.math.BigDecimal;
+
 @Entity
-@Table(name = "t_inventory")
+@Table(name = "products")
 @Getter
 @Setter
 @AllArgsConstructor
@@ -13,7 +15,9 @@ import lombok.*;
 public class Inventory {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    private Long productID;
     private String productName;
-    private Integer quantity;
+    private String description;
+    private BigDecimal price;
+    private Integer stockQuantity;
 }

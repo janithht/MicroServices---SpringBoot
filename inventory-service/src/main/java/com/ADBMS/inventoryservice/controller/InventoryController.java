@@ -1,12 +1,13 @@
 package com.ADBMS.inventoryservice.controller;
 
-import com.ADBMS.inventoryservice.dto.ProductCreateDTO;
-import com.ADBMS.inventoryservice.dto.ProductResponseDTO;
-import com.ADBMS.inventoryservice.dto.ProductUpdateDTO;
+import com.ADBMS.inventoryservice.dto.*;
+import com.ADBMS.inventoryservice.exception.InsufficientStockException;
+import com.ADBMS.inventoryservice.exception.ProductNotFoundException;
 import com.ADBMS.inventoryservice.model.Inventory;
 import com.ADBMS.inventoryservice.service.InventoryService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -15,7 +16,6 @@ import java.util.List;
 @RequestMapping("/api/inventory")
 @RequiredArgsConstructor
 public class InventoryController {
-
     private final InventoryService inventoryService;
 
     @PostMapping
@@ -24,16 +24,15 @@ public class InventoryController {
        return inventoryService.addNewProduct(productCreateDTO);
     }
 
-    @GetMapping("/{productName}")
-    @ResponseStatus(HttpStatus.OK)
-    public ProductResponseDTO getProductDetailsByName(@PathVariable String productName){
-        return inventoryService.getProductDetailsByName(productName);
-    }
-
     @GetMapping
     @ResponseStatus(HttpStatus.OK)
     public List<ProductResponseDTO> getAllProducts(){
         return inventoryService.getAllProducts();
+    }
+
+    @GetMapping("/{productID}")
+    public ProductResponseDTO getProductByProductID(@PathVariable(name = "productID") Long productID) {
+        return inventoryService.getProductByProductID(productID);
     }
 
     @PutMapping("/{productName}")
@@ -42,10 +41,25 @@ public class InventoryController {
         return inventoryService.updateProductByName(productName, productUpdateDTO);
     }
 
+    @PutMapping("/{productID}/quan-deduction/{quantityToDeduct}")
+    public ResponseEntity<Void> deductProductQuantity(
+            @PathVariable(name = "productID") Long productID,
+            @PathVariable(name = "quantityToDeduct") int quantityToDeduct){
+            try {
+                inventoryService.deductProductQuantity(productID, quantityToDeduct);
+                return ResponseEntity.ok().build();
+            } catch (ProductNotFoundException e) {
+                return ResponseEntity.notFound().build();
+            } catch (InsufficientStockException e) {
+                return ResponseEntity.badRequest().build();
+            } catch (Exception e) {
+                return ResponseEntity.internalServerError().build();
+            }
+    }
+
     @DeleteMapping("/{productName}")
     @ResponseStatus(HttpStatus.OK)
     public String deleteProductByName(@PathVariable String productName){
         return inventoryService.deleteProductByName(productName);
     }
-
 }

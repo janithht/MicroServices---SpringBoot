@@ -1,12 +1,14 @@
 package com.ADBMS.inventoryservice.service;
 
-import com.ADBMS.inventoryservice.dto.ProductCreateDTO;
-import com.ADBMS.inventoryservice.dto.ProductResponseDTO;
-import com.ADBMS.inventoryservice.dto.ProductUpdateDTO;
+import com.ADBMS.inventoryservice.dto.*;
+import com.ADBMS.inventoryservice.exception.InsufficientStockException;
+import com.ADBMS.inventoryservice.exception.ProductNotFoundException;
 import com.ADBMS.inventoryservice.model.Inventory;
 import com.ADBMS.inventoryservice.repository.InventoryRepository;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -16,13 +18,14 @@ import java.util.List;
 @RequiredArgsConstructor
 @Slf4j
 public class InventoryService {
-
     private final InventoryRepository inventoryRepository;
 
     public Inventory addNewProduct(ProductCreateDTO productCreateDTO) {
         Inventory inventory = Inventory.builder()
                 .productName(productCreateDTO.getProductName())
-                .quantity(productCreateDTO.getQuantity())
+                .stockQuantity(productCreateDTO.getStockQuantity())
+                .description(productCreateDTO.getDescription())
+                .price(productCreateDTO.getPrice())
                 .build();
         Inventory newProd = inventoryRepository.save(inventory);
         return newProd;
@@ -35,12 +38,13 @@ public class InventoryService {
         }
 
         ProductResponseDTO productResponse = new ProductResponseDTO();
-        productResponse.setId(inventory.getId());
+        productResponse.setId(inventory.getProductID());
         productResponse.setProductName(inventory.getProductName());
-        productResponse.setQuantity(inventory.getQuantity());
+        productResponse.setDescription(inventory.getDescription());
+        productResponse.setUnitPrice(inventory.getPrice());
+        productResponse.setStockQuantity(inventory.getStockQuantity());
 
         return  productResponse;
-
     }
 
     public ProductResponseDTO updateProductByName(String productName , ProductUpdateDTO productUpdateDTO) {
@@ -49,17 +53,19 @@ public class InventoryService {
             throw new IllegalArgumentException("Product not Found");
         }
         existingProduct.setProductName(productUpdateDTO.getProductName());
-        existingProduct.setQuantity(productUpdateDTO.getQuantity());
-
+        existingProduct.setStockQuantity(productUpdateDTO.getStockQuantity());
+        existingProduct.setPrice(productUpdateDTO.getUnitPrice());
+        existingProduct.setDescription(productUpdateDTO.getDescription());
         Inventory updatedInventory = inventoryRepository.save(existingProduct);
 
         ProductResponseDTO productResponseDTO = new ProductResponseDTO();
-        productResponseDTO.setId(updatedInventory.getId());
+        productResponseDTO.setId(updatedInventory.getProductID());
         productResponseDTO.setProductName(updatedInventory.getProductName());
-        productResponseDTO.setQuantity(updatedInventory.getQuantity());
+        productResponseDTO.setDescription(updatedInventory.getDescription());
+        productResponseDTO.setStockQuantity(updatedInventory.getStockQuantity());
+        productResponseDTO.setUnitPrice(updatedInventory.getPrice());
 
         return productResponseDTO;
-
     }
 
     public String deleteProductByName(String productName) {
@@ -69,23 +75,50 @@ public class InventoryService {
         }
         inventoryRepository.delete(existingProduct);
         return "Product deleted successfully";
-
     }
 
     public List<ProductResponseDTO> getAllProducts() {
         List<Inventory> products = inventoryRepository.findAll();
-
 
         List<ProductResponseDTO> productResponseDTOs = new ArrayList<>();
 
         for (Inventory product : products) {
             ProductResponseDTO productResponseDTO = new ProductResponseDTO();
             productResponseDTO.setProductName(product.getProductName());
-            productResponseDTO.setId(product.getId());
-            productResponseDTO.setQuantity(product.getQuantity());
+            productResponseDTO.setId(product.getProductID());
+            productResponseDTO.setStockQuantity(product.getStockQuantity());
+            productResponseDTO.setUnitPrice(product.getPrice());
+            productResponseDTO.setDescription(product.getDescription());
             productResponseDTOs.add(productResponseDTO);
         }
+
         return productResponseDTOs;
     }
 
+    public ProductResponseDTO getProductByProductID(Long productID) {
+        Inventory inventory = inventoryRepository.findById(productID).orElseThrow(
+                () -> new ProductNotFoundException("Product is not found with ID " + productID)
+        );
+
+        ProductResponseDTO productResponseDTO = new ProductResponseDTO();
+        productResponseDTO.setId(inventory.getProductID());
+        productResponseDTO.setProductName(inventory.getProductName());
+        productResponseDTO.setStockQuantity(inventory.getStockQuantity());
+        productResponseDTO.setDescription(inventory.getDescription());
+        productResponseDTO.setUnitPrice(inventory.getPrice());
+
+        return productResponseDTO;
+    }
+
+    @Transactional
+    public void deductProductQuantity(Long productID, int quantityToDeduct) {
+        Inventory inventory = inventoryRepository.findById(productID).orElseThrow(
+                () -> new ProductNotFoundException("Product not found with productID : " + productID)
+        );
+        if (quantityToDeduct > inventory.getStockQuantity()) {
+            throw new InsufficientStockException("Insufficient stock for productID : " + productID);
+        }
+        inventory.setStockQuantity(inventory.getStockQuantity() - quantityToDeduct);
+        inventoryRepository.save(inventory);
+    }
 }

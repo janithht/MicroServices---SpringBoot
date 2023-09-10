@@ -5,11 +5,13 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-@Data
 @AllArgsConstructor
 @NoArgsConstructor
+@Data
 @Builder
-public class InventoryResponse {
-    private String skuCode;
-    private boolean isInStock;
+public class UserDTO {
+    private String userID;
+    private String email;
+    private String username;
+    private String contact;
 }
