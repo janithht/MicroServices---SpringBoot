@@ -41,12 +41,10 @@ public class UserService {
         return userResponse;
     }
 
-    public UserResponseDTO updateByUserName(String username, UserUpdateDTO userUpdateDTO) {
-        User existingUser = userRepository.findByName(username);
-
-        if (existingUser == null) {
-            throw new IllegalArgumentException("User with username " + username + " not found");
-        }
+    public UserResponseDTO updateByUserID(String userID, UserUpdateDTO userUpdateDTO) {
+        User existingUser = userRepository.findById(userID).orElseThrow(
+                () -> new IllegalArgumentException("User name is not found with userID " + userID)
+        );
 
         existingUser.setEmail(userUpdateDTO.getEmail());
         existingUser.setName(userUpdateDTO.getName());
@@ -68,13 +66,12 @@ public class UserService {
         return userResponseDTO;
     }
 
-    public String deleteUserByName(String username) {
+    public String deleteUserByUserID(String userID) {
 
-        User existingUser = userRepository.findByName(username);
-        if (existingUser == null) {
-            throw new IllegalArgumentException("User with username " + username + " not found");
-        }
-        userRepository.deleteUserByName(username);
+        User existingUser = userRepository.findById(userID).orElseThrow(
+                () -> new IllegalArgumentException("user is not found with userID " + userID)
+        );
+        userRepository.deleteById(existingUser.getId());
         return "User deleted successfully";
     }
 }

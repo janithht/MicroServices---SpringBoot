@@ -27,15 +27,15 @@ public class UserController {
         return userService.getUserByUserId(userID);
     }
 
-    @PutMapping("/{username}")
+    @PutMapping("/{userID}")
     @ResponseStatus(HttpStatus.OK)
-    public UserResponseDTO updateByUserName(@PathVariable String username, @RequestBody UserUpdateDTO userUpdateDTO){
-        return userService.updateByUserName(username, userUpdateDTO);
+    public UserResponseDTO updateByUserID(@PathVariable String userID, @RequestBody UserUpdateDTO userUpdateDTO){
+        return userService.updateByUserID(userID, userUpdateDTO);
     }
 
-    @DeleteMapping("/{username}")
+    @DeleteMapping("/{userID}")
     @ResponseStatus(HttpStatus.OK)
-    public String deleteUserByName(@PathVariable String username){
-        return userService.deleteUserByName(username);
+    public String deleteUserByUserID(@PathVariable String userID){
+        return userService.deleteUserByUserID(userID);
     }
 }
