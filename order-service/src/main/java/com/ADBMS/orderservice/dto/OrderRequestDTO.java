@@ -13,5 +13,6 @@ import java.util.List;
 @Builder
 public class OrderRequestDTO {
     private String userID;
+    private String status;
     private List<OrderItemRequestDTO> orderItems;
 }

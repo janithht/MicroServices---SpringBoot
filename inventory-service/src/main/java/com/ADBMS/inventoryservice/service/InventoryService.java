@@ -122,4 +122,13 @@ public class InventoryService {
         inventory.setStockQuantity(inventory.getStockQuantity() - quantityToDeduct);
         inventoryRepository.save(inventory);
     }
+
+    @Transactional
+    public void increaseProductQuantity(Long productID, int quantityToIncrease) {
+        Inventory inventory = inventoryRepository.findById(productID).orElseThrow(
+                () -> new ProductNotFoundException("Product not found with productID : " + productID)
+        );
+        inventory.setStockQuantity(inventory.getStockQuantity() - quantityToIncrease);
+        inventoryRepository.save(inventory);
+    }
 }

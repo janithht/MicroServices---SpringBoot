@@ -57,6 +57,22 @@ public class InventoryController {
             }
     }
 
+    @PutMapping("/{productID}/quan-increase/{quantityToIncrease}")
+    public ResponseEntity<Void> increaseProductQuantity(
+            @PathVariable(name = "productID") Long productID,
+            @PathVariable(name = "quantityToIncrease") int quantityToIncrease){
+        try {
+            inventoryService.increaseProductQuantity(productID, quantityToIncrease);
+            return ResponseEntity.ok().build();
+        } catch (ProductNotFoundException e) {
+            return ResponseEntity.notFound().build();
+        } catch (InsufficientStockException e) {
+            return ResponseEntity.badRequest().build();
+        } catch (Exception e) {
+            return ResponseEntity.internalServerError().build();
+        }
+    }
+
     @DeleteMapping("/{productName}")
     @ResponseStatus(HttpStatus.OK)
     public String deleteProductByName(@PathVariable String productName){

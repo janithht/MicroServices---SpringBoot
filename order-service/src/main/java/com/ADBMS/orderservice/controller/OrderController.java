@@ -4,7 +4,7 @@ import com.ADBMS.orderservice.dto.OrderRequestDTO;
 import com.ADBMS.orderservice.model.Order;
 import com.ADBMS.orderservice.service.OrderService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -28,5 +28,10 @@ public class OrderController {
     @PostMapping
     public Order placeOrder(@RequestBody OrderRequestDTO orderRequest){
         return orderService.placeOrder(orderRequest);
+    }
+
+    @PutMapping("/{userId}/{orderId}")
+    public ResponseEntity<String> cancelOrder(@PathVariable String userId, @PathVariable Long orderId){
+        return orderService.cancelOrder(orderId);
     }
 }
