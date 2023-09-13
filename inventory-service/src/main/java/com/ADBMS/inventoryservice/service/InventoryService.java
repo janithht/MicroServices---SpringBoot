@@ -47,11 +47,12 @@ public class InventoryService {
         return  productResponse;
     }
 
-    public ProductResponseDTO updateProductByName(String productName , ProductUpdateDTO productUpdateDTO) {
-        Inventory existingProduct = inventoryRepository.findInventoryByProductName(productName);
-        if(existingProduct == null){
-            throw new IllegalArgumentException("Product not Found");
-        }
+    public ProductResponseDTO updateProductByProductID(
+            Long productID ,
+            ProductUpdateDTO productUpdateDTO) {
+        Inventory existingProduct = inventoryRepository.findById(productID).orElseThrow(
+                () -> new IllegalArgumentException("Product not Found")
+        );
         existingProduct.setProductName(productUpdateDTO.getProductName());
         existingProduct.setStockQuantity(productUpdateDTO.getStockQuantity());
         existingProduct.setPrice(productUpdateDTO.getUnitPrice());

@@ -35,10 +35,10 @@ public class InventoryController {
         return inventoryService.getProductByProductID(productID);
     }
 
-    @PutMapping("/{productName}")
+    @PutMapping("/{productID}")
     @ResponseStatus(HttpStatus.OK)
-    public ProductResponseDTO updateProductByName(@PathVariable String productName,@RequestBody ProductUpdateDTO productUpdateDTO){
-        return inventoryService.updateProductByName(productName, productUpdateDTO);
+    public ProductResponseDTO updateProductByProductID(@PathVariable Long productID,@RequestBody ProductUpdateDTO productUpdateDTO){
+        return inventoryService.updateProductByProductID(productID, productUpdateDTO);
     }
 
     @PutMapping("/{productID}/quan-deduction/{quantityToDeduct}")
