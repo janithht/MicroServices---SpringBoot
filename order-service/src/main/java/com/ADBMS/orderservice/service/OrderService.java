@@ -60,15 +60,12 @@ public class OrderService {
 
         for (OrderItemRequestDTO orderItemRequestDTO : orderRequestDTO.getOrderItems()) {
             InventoryResponseDTO inventoryResponseDTO = fetchProductInformation(orderItemRequestDTO.getProductID());
-
             if (inventoryResponseDTO == null) {
                 throw new ProductNotFoundException("Product is not found with ID " + orderItemRequestDTO.getProductID());
             }
-
             if (orderItemRequestDTO.getQuantity() > inventoryResponseDTO.getStockQuantity()) {
                 throw new InsufficientStockException("Insufficient stock for product:" + orderItemRequestDTO.getProductID());
             }
-
             OrderItem orderItem = new OrderItem();
             orderItem.setProductID(inventoryResponseDTO.getId());
             orderItem.setPricePerUnit(inventoryResponseDTO.getUnitPrice());
@@ -79,7 +76,6 @@ public class OrderService {
             orderItems.add(orderItem);
             totalAmount = totalAmount.add(orderItem.getSubTotal());
         }
-
         order.setOrderItems(orderItems);
         order.setTotalAmount(totalAmount);
 
